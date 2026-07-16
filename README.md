@@ -290,7 +290,9 @@ PokeHub/
 <h2 align="center">📜 Licença</h2>
 
 <p align="center">
-  Este projeto está sob a licença MIT. Veja o arquivo <a href="./LICENSE">LICENSE</a> para mais detalhes.
+  Este projeto está sob a licença <strong>Apache 2.0</strong>. Veja o arquivo <a href="./LICENSE">LICENSE</a> para mais detalhes.
+
+<em>Se você usar ou modificar este projeto, mantenha os créditos do autor original (DAVI3DS) nos arquivos.</em>
 </p>
 
 <p align="center">
