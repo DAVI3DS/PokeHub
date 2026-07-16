@@ -56,6 +56,7 @@ const AuthUI = window.AuthUI || (function() {
       </div>
       <div class="auth-dropdown" id="authDropdown">
         <button type="button" class="auth-dropdown-item" onclick="AuthUI._abrirPerfil()">👤 Meu Perfil</button>
+        <button type="button" class="auth-dropdown-item" onclick="AuthUI._abrirEquipes()">📋 Minhas Equipes</button>
         <div class="auth-dropdown-divider"></div>
         <button type="button" class="auth-dropdown-item danger" onclick="AuthUI._logout()">🚪 Sair</button>
       </div>
@@ -132,6 +133,18 @@ const AuthUI = window.AuthUI || (function() {
     alternarModo('pokemon');
   }
 
+  function _abrirEquipes() {
+    fecharDropdown();
+    // Garantir container
+    let page = document.getElementById('teamsPage');
+    if (!page) {
+      page = document.createElement('div');
+      page.id = 'teamsPage';
+      document.getElementById('resultado')?.after(page);
+    }
+    if (window.TeamsUI) TeamsUI.mostrar();
+  }
+
   function _logout() {
     fecharDropdown();
     AuthService.logout();
@@ -142,5 +155,5 @@ const AuthUI = window.AuthUI || (function() {
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 
-  return { init, _abrirPerfil, _logout };
+  return { init, _abrirPerfil, _abrirEquipes, _logout };
 })();
