@@ -140,11 +140,27 @@ const TeamsUI = window.TeamsUI || (function() {
 
   function _abrirSeletorSlot(idx) {
     slotSelecionado = idx;
-    // Garantir que a base de dados carregue
     const TB = window.TeamBuilder;
-    if (TB && !TB.DB.ready && !TB.DB.loading) TB.carregarBase();
-    // Renderiza seletor inline usando dados do TeamBuilder
-    renderizarSeletorPokemon();
+    if (!TB) return;
+
+    if (TB.DB.ready && TB.DB.pokemons.length > 0) {
+      renderizarSeletorPokemon();
+      return;
+    }
+
+    // Mostra loading e inicia carregamento
+    const pagina = document.getElementById('teamsContainer');
+    if (pagina) pagina.innerHTML = '<div class="ta-loading"><div class="ta-spinner"></div><p>Carregando Pokémon...</p></div>';
+
+    if (!TB.DB.loading) TB.carregarBase();
+
+    // Tenta de novo quando a base estiver pronta
+    var check = setInterval(function() {
+      if (TB.DB.ready && TB.DB.pokemons.length > 0) {
+        clearInterval(check);
+        if (slotSelecionado === idx) renderizarSeletorPokemon();
+      }
+    }, 300);
   }
 
   function renderizarSeletorPokemon() {
@@ -216,7 +232,7 @@ const TeamsUI = window.TeamsUI || (function() {
 
   function listarPokemons(filtros) {
     const TB = window.TeamBuilder;
-    if (!TB || !TB.DB.pokemons || !TB.DB.ready) return [];
+    if (!TB || !TB.DB.pokemons) return [];
     let pool = [...TB.DB.pokemons];
     if (filtros.nome) {
       const q = filtros.nome.toLowerCase();
