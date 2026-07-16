@@ -101,27 +101,24 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     div.innerHTML = html;
   }
 
-  /* ─── Seletor Modal ─── */
+  /* ─── Seletor Inline (como o Minhas Equipes) ─── */
 
   let slotSelecionado = -1;
 
   function abrirSeletor(idx) {
     slotSelecionado = idx;
-    const modal = document.getElementById("ta-modal");
-    if (!modal) return;
     renderizarSeletor();
-    modal.classList.add("active");
   }
 
   function fecharSeletor() {
-    const modal = document.getElementById("ta-modal");
-    if (modal) modal.classList.remove("active");
     slotSelecionado = -1;
   }
 
   function renderizarSeletor() {
-    const div = document.getElementById("ta-modal-body");
-    if (!div) return;
+    const container = document.getElementById("teamAnalyzerContainer");
+    if (!container) return;
+
+    const TB = window.TeamBuilder;
     const filtros = lerFiltrosSeletor();
     const lista = listarPokemons(filtros).slice(0, 60);
 
@@ -139,7 +136,10 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
       { value: "spe", label: "Velocidade" }
     ];
 
-    div.innerHTML = `
+    container.innerHTML = `
+      <div style="margin-bottom:14px;">
+        <button type="button" class="tb-build-btn" onclick="TeamAnalyzer._voltarDoSeletor()">← Voltar</button>
+      </div>`;
       <div class="ta-search-filters">
         <input type="text" id="ta-sel-search" placeholder="Pesquisar por nome..." oninput="TeamAnalyzer._filtrarSeletor()">
         <select id="ta-sel-tipo" onchange="TeamAnalyzer._filtrarSeletor()">
@@ -398,13 +398,6 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     html += `<div class="ta-live-preview" id="ta-preview"></div>`;
     html += `<div style="text-align:center;"><button type="button" class="ta-analyze-btn" id="ta-analyze-btn">📊 Analisar Equipe</button></div>`;
     html += `<div id="ta-result"></div>`;
-    // Modal seletor
-    html += `<div class="ta-modal-overlay" id="ta-modal">
-      <div class="ta-modal">
-        <button type="button" class="ta-modal-close" onclick="TeamAnalyzer._fecharSeletor()">×</button>
-        <div id="ta-modal-body"></div>
-      </div>
-    </div>`;
     return html;
   }
 
@@ -547,6 +540,11 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     garantirBase();
   }
 
+  function _voltarDoSeletor() {
+    slotSelecionado = -1;
+    mostrar();
+  }
+
   function mostrar() {
     const c = document.getElementById("teamAnalyzerContainer");
     if (!c) return;
@@ -559,6 +557,7 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     init, mostrar,
     _abrirSeletor: abrirSeletor,
     _fecharSeletor: fecharSeletor,
+    _voltarDoSeletor,
     _remover: remover,
     _selecionarPokemon,
     _filtrarSeletor
