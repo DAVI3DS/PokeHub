@@ -199,8 +199,8 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     const pokemon = TB.DB.pokemons.find(p => p.id === id);
     if (!pokemon || slotSelecionado < 0) return;
     adicionar(slotSelecionado, pokemon);
-    renderizarSlots();
-    fecharSeletor();
+    slotSelecionado = -1;
+    mostrar();
   }
 
   /* ─── Cores dos tipos (para o seletor) ─── */
