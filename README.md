@@ -5,6 +5,16 @@
   <br>
 
   <p>
+    <a href="https://davi3ds.github.io/PokeHub/">
+      <img src="https://img.shields.io/badge/ACESSAR%20SITE-ffcb05?style=for-the-badge&logo=githubpages&logoColor=2a3f9d" alt="Acessar site online" />
+    </a>
+    <br>
+    <br>
+    <a href="https://davi3ds.github.io/PokeHub/">
+      <img src="https://img.shields.io/badge/ACESSAR%20SITE-2a3f9d?style=for-the-badge&logo=githubpages&logoColor=ffcb05" alt="Acessar site online" />
+    </a>
+    <br>
+    <br>
     <a href="https://github.com/DAVI3DS/PokeHub">
       <img src="https://img.shields.io/badge/REPOSIT%C3%93RIO-ffcb05?style=for-the-badge&logo=github&logoColor=2a3f9d" alt="Repositório no GitHub" />
     </a>
@@ -181,8 +191,8 @@
 <h2 align="center">🚀 Como Rodar</h2>
 
 <p align="center">
-  <a href="https://github.com/DAVI3DS/PokeHub">
-    <img src="https://img.shields.io/badge/REPOSIT%C3%93RIO-2a3f9d?style=for-the-badge&logo=github&logoColor=ffcb05" alt="Repositório no GitHub" />
+  <a href="https://davi3ds.github.io/PokeHub/">
+    <img src="https://img.shields.io/badge/ACESSAR%20SITE-2a3f9d?style=for-the-badge&logo=githubpages&logoColor=ffcb05" alt="Acessar site online" />
   </a>
 </p>
 
