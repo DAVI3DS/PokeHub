@@ -200,7 +200,7 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     if (!pokemon || slotSelecionado < 0) return;
     adicionar(slotSelecionado, pokemon);
     slotSelecionado = -1;
-    mostrar();
+    init();
   }
 
   /* ─── Cores dos tipos (para o seletor) ─── */
