@@ -18,7 +18,6 @@ const AuthUI = window.AuthUI || (function() {
     AuthService.onAuthChange((user, event) => {
       if (event === 'SIGNED_IN' && user) {
         renderizarUsuario(user);
-        adicionarAbasPrivadas();
       } else if (event === 'SIGNED_OUT') {
         renderizarLogout();
       }
