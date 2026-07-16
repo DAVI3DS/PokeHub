@@ -15,12 +15,12 @@ const AuthUI = window.AuthUI || (function() {
     authArea.innerHTML = `<button type="button" class="auth-btn" id="authLoginBtn">🎮 Entrar com Discord</button>`;
     document.body.appendChild(authArea);
 
-    // Overlay para fechar dropdown
-    const overlay = document.createElement('div');
-    overlay.className = 'auth-overlay';
-    overlay.id = 'authOverlay';
-    overlay.addEventListener('click', fecharDropdown);
-    document.body.appendChild(overlay);
+    // Fechar dropdown clicando fora
+    document.addEventListener('click', (e) => {
+      if (dropdownOpen && !e.target.closest('#authArea')) {
+        fecharDropdown();
+      }
+    });
 
     // Conectar botão de login
     document.getElementById('authLoginBtn')?.addEventListener('click', () => {
@@ -88,7 +88,6 @@ const AuthUI = window.AuthUI || (function() {
   function fecharDropdown() {
     dropdownOpen = false;
     document.getElementById('authDropdown')?.classList.remove('open');
-    document.getElementById('authOverlay')?.classList.remove('active');
   }
 
   function _abrirPerfil() {

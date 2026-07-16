@@ -2134,6 +2134,10 @@
 
       document.getElementById("teamBuilderContainer").hidden = true;
       document.getElementById("teamAnalyzerContainer").hidden = true;
+      const profileEl = document.getElementById("profileContainer");
+      if (profileEl) profileEl.hidden = true;
+      const teamsEl = document.getElementById("teamsPage");
+      if (teamsEl) teamsEl.hidden = true;
 
       if (modo === "pokemon") {
         campoBuscaPokemon.hidden = false;
