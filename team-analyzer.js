@@ -530,7 +530,7 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
 
   function init() {
     const c = document.getElementById("teamAnalyzerContainer");
-    if (!c || (c.hasChildNodes() && c.innerHTML.trim() !== "")) return;
+    if (!c) return;
 
     c.innerHTML = renderizar();
 
@@ -542,14 +542,14 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
 
   function _voltarDoSeletor() {
     slotSelecionado = -1;
-    mostrar();
+    init();
   }
 
   function mostrar() {
     const c = document.getElementById("teamAnalyzerContainer");
     if (!c) return;
     c.hidden = false;
-    if (!c.hasChildNodes() || c.innerHTML.trim() === "") init();
+    init();
   }
 
   // API pública para o seletor
