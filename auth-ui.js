@@ -6,39 +6,57 @@ const AuthUI = window.AuthUI || (function() {
   let dropdownOpen = false;
 
   function init() {
-    // Injetar área de auth no cabeçalho
-    const header = document.querySelector('.abas-modo-principal');
-    if (!header) return;
-
     const authArea = document.createElement('div');
     authArea.id = 'authArea';
     authArea.innerHTML = `<button type="button" class="auth-btn" id="authLoginBtn">🎮 Entrar com Discord</button>`;
     document.body.appendChild(authArea);
 
-    // Fechar dropdown clicando fora
-    document.addEventListener('click', (e) => {
-      if (dropdownOpen && !e.target.closest('#authArea')) {
-        fecharDropdown();
-      }
-    });
-
-    // Conectar botão de login
     document.getElementById('authLoginBtn')?.addEventListener('click', () => {
       AuthService.login();
     });
 
-    // Escutar mudanças de auth
     AuthService.onAuthChange((user, event) => {
       if (event === 'SIGNED_IN' && user) {
         renderizarUsuario(user);
+        adicionarAbasPrivadas();
       } else if (event === 'SIGNED_OUT') {
         renderizarLogout();
+        removerAbasPrivadas();
       }
     });
 
-    // Se já estiver logado (callback processado), atualizar
     const user = AuthService.getUser();
-    if (user) renderizarUsuario(user);
+    if (user) { renderizarUsuario(user); adicionarAbasPrivadas(); }
+  }
+
+  function adicionarAbasPrivadas() {
+    const barra = document.querySelector('.abas-modo-principal');
+    if (!barra) return;
+    if (document.querySelector('[data-modo="profile"]')) return; // já existe
+
+    const perfil = document.createElement('button');
+    perfil.type = 'button';
+    perfil.className = 'aba-modo-principal';
+    perfil.dataset.modo = 'profile';
+    perfil.role = 'tab';
+    perfil.textContent = '👤 Perfil';
+    perfil.onclick = () => alternarModo('profile');
+
+    const equipes = document.createElement('button');
+    equipes.type = 'button';
+    equipes.className = 'aba-modo-principal';
+    equipes.dataset.modo = 'teams';
+    equipes.role = 'tab';
+    equipes.textContent = '📋 Equipes';
+    equipes.onclick = () => alternarModo('teams');
+
+    barra.appendChild(perfil);
+    barra.appendChild(equipes);
+  }
+
+  function removerAbasPrivadas() {
+    document.querySelector('[data-modo="profile"]')?.remove();
+    document.querySelector('[data-modo="teams"]')?.remove();
   }
 
   function renderizarUsuario(user) {
@@ -55,14 +73,17 @@ const AuthUI = window.AuthUI || (function() {
         <span class="auth-dropdown-arrow">▾</span>
       </div>
       <div class="auth-dropdown" id="authDropdown">
-        <button type="button" class="auth-dropdown-item" onclick="AuthUI._abrirPerfil()">👤 Meu Perfil</button>
-        <button type="button" class="auth-dropdown-item" onclick="AuthUI._abrirEquipes()">📋 Minhas Equipes</button>
+        <button type="button" class="auth-dropdown-item" onclick="AuthUI._irPerfil()">👤 Meu Perfil</button>
+        <button type="button" class="auth-dropdown-item" onclick="AuthUI._irEquipes()">📋 Minhas Equipes</button>
         <div class="auth-dropdown-divider"></div>
         <button type="button" class="auth-dropdown-item danger" onclick="AuthUI._logout()">🚪 Sair</button>
       </div>
     `;
 
-    document.getElementById('authUserBtn')?.addEventListener('click', toggleDropdown);
+    document.getElementById('authUserBtn')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleDropdown();
+    });
   }
 
   function renderizarLogout() {
@@ -70,19 +91,11 @@ const AuthUI = window.AuthUI || (function() {
     if (!area) return;
     area.innerHTML = `<button type="button" class="auth-btn" id="authLoginBtn">🎮 Entrar com Discord</button>`;
     document.getElementById('authLoginBtn')?.addEventListener('click', () => AuthService.login());
-
-    // Esconder profile se estiver visível
-    const pc = document.getElementById('profileContainer');
-    if (pc) pc.hidden = true;
   }
 
   function toggleDropdown() {
-    const dd = document.getElementById('authDropdown');
-    const ov = document.getElementById('authOverlay');
-    if (!dd) return;
     dropdownOpen = !dropdownOpen;
-    dd.classList.toggle('open', dropdownOpen);
-    if (ov) ov.classList.toggle('active', dropdownOpen);
+    document.getElementById('authDropdown')?.classList.toggle('open', dropdownOpen);
   }
 
   function fecharDropdown() {
@@ -90,58 +103,57 @@ const AuthUI = window.AuthUI || (function() {
     document.getElementById('authDropdown')?.classList.remove('open');
   }
 
-  function _abrirPerfil() {
-    fecharDropdown();
-
-    const user = AuthService.getUser();
-    if (!user) return;
-
-    // Garantir que o container existe
-    let pc = document.getElementById('profileContainer');
-    if (!pc) {
-      pc = document.createElement('div');
-      pc.id = 'profileContainer';
-      document.getElementById('resultado')?.after(pc);
+  // Fechar dropdown ao clicar fora
+  document.addEventListener('click', (e) => {
+    if (dropdownOpen && !e.target.closest('#authArea')) {
+      fecharDropdown();
     }
+  });
 
-    // Esconder outros containers
+  function _irPerfil() {
+    fecharDropdown();
+    alternarModo('profile');
+  }
+
+  function _irEquipes() {
+    fecharDropdown();
+    alternarModo('teams');
+  }
+
+  function _renderizarPerfil() {
+    const user = AuthService.getUser();
+    if (!user) { alternarModo('pokemon'); return; }
+
+    const resultado = document.getElementById('resultado');
+    if (!resultado) return;
+
+    // Esconder containers privados e mostrar no resultado
     document.getElementById('teamBuilderContainer').hidden = true;
     document.getElementById('teamAnalyzerContainer').hidden = true;
-    document.getElementById('resultado').innerHTML = '';
+    const teamsPage = document.getElementById('teamsPage');
+    if (teamsPage) teamsPage.hidden = true;
+    const profileContainer = document.getElementById('profileContainer');
+    if (profileContainer) profileContainer.hidden = true;
 
-    const avatar = user.avatar_url || user.picture || `https://cdn.discordapp.com/embed/avatars/0.png`;
+    const avatar = user.avatar_url || user.picture || 'https://cdn.discordapp.com/embed/avatars/0.png';
     const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
     const tag = user.email ? user.email : '';
     const dataCriacao = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '—';
 
-    pc.hidden = false;
-    pc.innerHTML = `
-      <img class="profile-avatar" src="${avatar}" alt="Avatar" referrerpolicy="no-referrer">
-      <h2>${nome}</h2>
-      <p class="profile-tag">${tag}</p>
-      <div class="profile-meta">
-        <p><strong>ID:</strong> ${user.id}</p>
-        <p><strong>Conta criada em:</strong> ${dataCriacao}</p>
-      </div>
-      <div class="profile-placeholder">
-        ⚙️ Em breve: suas equipes salvos, estatísticas e mais!
+    resultado.innerHTML = `
+      <div style="text-align:center;">
+        <img src="${avatar}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);" referrerpolicy="no-referrer">
+        <h2 style="margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.6rem);color:#1d1d1f;">${nome}</h2>
+        <p style="margin:0 0 20px;font-size:0.9rem;color:#5f838a;font-weight:700;">${tag}</p>
+        <div style="text-align:left;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.75);margin-bottom:16px;">
+          <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>ID:</strong> ${user.provider_id || user.id}</p>
+          <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>Conta criada em:</strong> ${dataCriacao}</p>
+        </div>
+        <div style="padding:24px;border-radius:16px;background:rgba(255,255,255,0.3);border:1px dashed rgba(26,26,46,0.15);color:#5f838a;font-size:0.9rem;">
+          ⚙️ Em breve: suas equipes, estatísticas e mais!
+        </div>
       </div>
     `;
-
-    // Voltar pra aba Pokedex visualmente
-    alternarModo('pokemon');
-  }
-
-  function _abrirEquipes() {
-    fecharDropdown();
-    // Garantir container
-    let page = document.getElementById('teamsPage');
-    if (!page) {
-      page = document.createElement('div');
-      page.id = 'teamsPage';
-      document.getElementById('resultado')?.after(page);
-    }
-    if (window.TeamsUI) TeamsUI.mostrar();
   }
 
   function _logout() {
@@ -150,9 +162,8 @@ const AuthUI = window.AuthUI || (function() {
     alternarModo('pokemon');
   }
 
-  // Init quando DOM carregar
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 
-  return { init, _abrirPerfil, _abrirEquipes, _logout };
+  return { init, _irPerfil, _irEquipes, _renderizarPerfil, _logout };
 })();

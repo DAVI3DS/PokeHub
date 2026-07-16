@@ -20,14 +20,12 @@ const TeamsUI = window.TeamsUI || (function() {
   /* ─── Renderizar Lista ─── */
 
   function renderizarPagina(msg) {
-    const container = document.getElementById('teamsPage');
-    if (!container) return;
+    const resultado = document.getElementById('resultado');
+    if (!resultado) return;
 
-    // Esconder outros containers
-    document.getElementById('teamBuilderContainer').hidden = true;
-    document.getElementById('teamAnalyzerContainer').hidden = true;
-    document.getElementById('profileContainer') && (document.getElementById('profileContainer').hidden = true);
-    document.getElementById('resultado').innerHTML = '';
+    // Esconder containers privados
+    const teamsPage = document.getElementById('teamsPage');
+    if (teamsPage) teamsPage.hidden = true;
 
     const equipes = TeamsData.listar();
 
@@ -58,8 +56,7 @@ const TeamsUI = window.TeamsUI || (function() {
       html += `<div class="tm-grid" id="tmGrid">${equipes.map(e => renderizarCard(e)).join('')}</div>`;
     }
 
-    container.innerHTML = html;
-    container.hidden = false;
+    resultado.innerHTML = html;
   }
 
   function renderizarCard(equipe) {
@@ -87,8 +84,8 @@ const TeamsUI = window.TeamsUI || (function() {
   /* ─── Editor ─── */
 
   function renderizarEditor() {
-    const container = document.getElementById('teamsPage');
-    if (!container) return;
+    const resultado = document.getElementById('resultado');
+    if (!resultado) return;
 
     const titulo = modoEditor === 'criar' ? '➕ Nova Equipe' : '✏️ Editar Equipe';
     const eq = modoEditor === 'editar' ? TeamsData.obter(editandoId) : null;
@@ -105,7 +102,7 @@ const TeamsUI = window.TeamsUI || (function() {
       </div>`;
     }).join('');
 
-    container.innerHTML = `<div class="tm-editor">
+    resultado.innerHTML = `<div class="tm-editor">
       <h3>${titulo}</h3>
       <div class="tm-field">
         <label>Nome da equipe</label>
@@ -132,7 +129,7 @@ const TeamsUI = window.TeamsUI || (function() {
   }
 
   function renderizarSeletorPokemon() {
-    const container = document.getElementById('teamsPage');
+    const container = document.getElementById('resultado');
     if (!container) return;
 
     const filtros = lerFiltrosSeletor();
@@ -147,8 +144,7 @@ const TeamsUI = window.TeamsUI || (function() {
       { value: "spD", label: "Def. Esp." }, { value: "spe", label: "Velocidade" }
     ];
 
-    container.innerHTML = `
-      <div style="margin-bottom:14px;">
+    container.innerHTML = `<div style="margin-bottom:14px;">
         <button type="button" class="tm-btn tm-btn-secondary" onclick="TeamsUI._voltarEditor()">← Voltar</button>
       </div>
       <div class="ta-search-filters">

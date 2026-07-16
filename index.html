@@ -2202,6 +2202,34 @@
         if (window.TeamAnalyzer) {
           TeamAnalyzer.mostrar();
         }
+      } else if (modo === "profile") {
+        campoBuscaPokemon.hidden = true;
+        campoBuscaPacote.hidden = true;
+        document.getElementById("sugestoes").hidden = true;
+        document.getElementById("sugestoesPacotes").hidden = true;
+        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
+        campoBuscaPokemon.value = "";
+        campoBuscaPacote.value = "";
+        document.getElementById("sugestoes").innerHTML = "";
+        document.getElementById("sugestoesPacotes").innerHTML = "";
+        resultado.innerHTML = "";
+        if (window.AuthUI) {
+          AuthUI._renderizarPerfil();
+        }
+      } else if (modo === "teams") {
+        campoBuscaPokemon.hidden = true;
+        campoBuscaPacote.hidden = true;
+        document.getElementById("sugestoes").hidden = true;
+        document.getElementById("sugestoesPacotes").hidden = true;
+        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
+        campoBuscaPokemon.value = "";
+        campoBuscaPacote.value = "";
+        document.getElementById("sugestoes").innerHTML = "";
+        document.getElementById("sugestoesPacotes").innerHTML = "";
+        resultado.innerHTML = "";
+        if (window.TeamsUI) {
+          TeamsUI.mostrar();
+        }
       }
     }
 
