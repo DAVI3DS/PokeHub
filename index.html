@@ -2159,12 +2159,20 @@
       estadoPacoteTcgAtual = null;
       filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
 
+      // Limpar todos os conteúdos antes de decidir o que mostrar
+      resultado.innerHTML = "";
+      document.getElementById("teamBuilderContainer").innerHTML = "";
+      document.getElementById("teamAnalyzerContainer").innerHTML = "";
+      const profileContainer = document.getElementById("profileContainer");
+      if (profileContainer) profileContainer.innerHTML = "";
+      const teamsContainer = document.getElementById("teamsContainer");
+      if (teamsContainer) teamsContainer.innerHTML = "";
+
       // Mostrar página ativa
       if (modo === "pokemon") {
         resultado.hidden = false;
         campoBuscaPokemon.hidden = false;
         if (sugestoes) sugestoes.hidden = false;
-        resultado.innerHTML = "";
       } else if (modo === "pacotes") {
         resultado.hidden = false;
         campoBuscaPacote.hidden = false;
@@ -2172,16 +2180,20 @@
         resultado.innerHTML = `<div class="painel-pacotes-tcg"><p style="text-align:center;margin-top:32px;color:#5f6f84;">Digite o nome de um pacote TCG para começar a busca.</p></div>`;
       } else if (modo === "teambuilder") {
         document.getElementById("teamBuilderContainer").hidden = false;
-        if (window.TeamBuilder) TeamBuilder.mostrar();
+        if (window.TeamBuilder) TeamBuilder.init();
       } else if (modo === "teamanalyzer") {
         document.getElementById("teamAnalyzerContainer").hidden = false;
-        if (window.TeamAnalyzer) TeamAnalyzer.mostrar();
+        if (window.TeamAnalyzer) TeamAnalyzer.init();
       } else if (modo === "profile") {
-        const pp = document.getElementById("profileContainer");
-        if (pp) { pp.hidden = false; if (window.AuthUI) AuthUI._renderizarPerfil(); }
+        if (profileContainer) {
+          profileContainer.hidden = false;
+          if (window.AuthUI) AuthUI._renderizarPerfil();
+        }
       } else if (modo === "teams") {
-        const tt = document.getElementById("teamsContainer");
-        if (tt) { tt.hidden = false; if (window.TeamsUI) TeamsUI.mostrar(); }
+        if (teamsContainer) {
+          teamsContainer.hidden = false;
+          if (window.TeamsUI) TeamsUI.mostrar();
+        }
       }
     }
 
