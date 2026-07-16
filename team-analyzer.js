@@ -139,7 +139,7 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
     container.innerHTML = `
       <div style="margin-bottom:14px;">
         <button type="button" class="tb-build-btn" onclick="TeamAnalyzer._voltarDoSeletor()">← Voltar</button>
-      </div>`;
+      </div>
       <div class="ta-search-filters">
         <input type="text" id="ta-sel-search" placeholder="Pesquisar por nome..." oninput="TeamAnalyzer._filtrarSeletor()">
         <select id="ta-sel-tipo" onchange="TeamAnalyzer._filtrarSeletor()">
