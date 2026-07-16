@@ -131,5 +131,6 @@ const AuthUI = window.AuthUI || (function() {
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 
-  return { init, _irPerfil, _irEquipes, _renderizarPerfil, _logout };
+  window.AuthUI = { init, _irPerfil, _irEquipes, _renderizarPerfil, _logout };
+  return window.AuthUI;
 })();
