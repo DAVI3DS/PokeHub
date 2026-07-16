@@ -12,8 +12,6 @@ const TeamsUI = window.TeamsUI || (function() {
   /* ─── Inicializar ─── */
 
   function mostrar() {
-    const user = AuthService.getUser();
-    if (!user) return;
     renderizarPagina();
   }
 
@@ -36,7 +34,7 @@ const TeamsUI = window.TeamsUI || (function() {
           <option value="name">Nome</option>
           <option value="createdAt">Data de criação</option>
         </select>
-        <button type="button" class="tm-btn tm-btn-primary" onclick="TeamsUI._novaEquipe()">➕ Nova Equipe</button>
+        <button type="button" class="tm-btn tm-btn-primary" id="tmBtnNova">➕ Nova Equipe</button>
       </div>
     </div>`;
 
@@ -55,6 +53,10 @@ const TeamsUI = window.TeamsUI || (function() {
     }
 
     container.innerHTML = html;
+    setTimeout(() => {
+      const btn = document.getElementById('tmBtnNova');
+      if (btn) btn.addEventListener('click', () => { try { _novaEquipe(); } catch(e) { console.error('novaEquipe error:', e); } });
+    }, 0);
   }
 
   function renderizarCard(equipe) {
@@ -92,11 +94,11 @@ const TeamsUI = window.TeamsUI || (function() {
     else timeEditor = [null, null, null, null, null, null];
 
     const slotsHtml = timeEditor.map((p, i) => {
-      if (!p) return `<div class="tm-slot" onclick="TeamsUI._abrirSeletorSlot(${i})"><span class="tm-slot-empty">+ Slot ${i+1}</span></div>`;
-      return `<div class="tm-slot filled">
+      if (!p) return `<div class="tm-slot" data-slot="${i}"><span class="tm-slot-empty">+ Slot ${i+1}</span></div>`;
+      return `<div class="tm-slot filled" data-slot="${i}">
         <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png" alt="${p.name}">
         <div class="tm-slot-name">${p.name}</div>
-        <button type="button" style="position:absolute;top:4px;right:4px;border:0;background:rgba(204,0,0,0.15);color:#c00;border-radius:50%;width:20px;height:20px;font-size:0.75rem;cursor:pointer;font-weight:700;display:flex;align-items:center;justify-content:center;" onclick="event.stopPropagation();TeamsUI._removerSlot(${i})">×</button>
+        <button type="button" class="tm-slot-rm" data-idx="${i}">×</button>
       </div>`;
     }).join('');
 
@@ -110,12 +112,28 @@ const TeamsUI = window.TeamsUI || (function() {
         <label>Descrição (opcional)</label>
         <textarea id="tmDesc" placeholder="Descreva sua estratégia...">${eq ? escapar(eq.description || '') : ''}</textarea>
       </div>
-      <div class="tm-slots">${slotsHtml}</div>
+      <div class="tm-slots" id="tmEditSlots">${slotsHtml}</div>
       <div class="tm-editor-actions">
-        <button type="button" class="tm-btn tm-btn-primary" onclick="TeamsUI._salvarEquipe()">💾 Salvar</button>
-        <button type="button" class="tm-btn tm-btn-secondary" onclick="TeamsUI._voltar()">Cancelar</button>
+        <button type="button" class="tm-btn tm-btn-primary" id="tmBtnSalvar">💾 Salvar</button>
+        <button type="button" class="tm-btn tm-btn-secondary" id="tmBtnCancelar">Cancelar</button>
       </div>
     </div>`;
+
+    // Conectar eventos
+    document.querySelectorAll('[data-slot]').forEach(el => {
+      el.addEventListener('click', function() {
+        const i = parseInt(this.dataset.slot);
+        _abrirSeletorSlot(i);
+      });
+    });
+    document.querySelectorAll('.tm-slot-rm').forEach(el => {
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        _removerSlot(parseInt(this.dataset.idx));
+      });
+    });
+    document.getElementById('tmBtnSalvar')?.addEventListener('click', _salvarEquipe);
+    document.getElementById('tmBtnCancelar')?.addEventListener('click', _voltar);
   }
 
   /* ─── Seletor de Pokémon (reusa TeamAnalyzer) ─── */
