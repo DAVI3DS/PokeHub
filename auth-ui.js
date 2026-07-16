@@ -94,15 +94,7 @@ const AuthUI = window.AuthUI || (function() {
 
     container.innerHTML = `<div class="ta-loading"><div class="ta-spinner"></div><p>Carregando perfil...</p></div>`;
 
-    // Tenta obter user — pode ser que o init ainda não terminou
-    const tentar = () => {
-      const user = AuthService.getUser();
-      if (!user) {
-        // Tenta de novo em 300ms
-        setTimeout(tentar, 300);
-        return;
-      }
-
+    const render = (user) => {
       const avatar = user.avatar_url || user.picture || 'https://cdn.discordapp.com/embed/avatars/0.png';
       const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
       const tag = user.email ? user.email : '';
@@ -123,7 +115,35 @@ const AuthUI = window.AuthUI || (function() {
         </div>
       `;
     };
-    tentar();
+
+    // Tentar pegar do localStorage do Supabase
+    try {
+      const raw = localStorage.getItem('pokehub-auth');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const meta = parsed?.user?.user_metadata;
+        if (meta) {
+          render({
+            avatar_url: meta.avatar_url || meta.picture || '',
+            picture: meta.picture || meta.avatar_url || '',
+            global_name: meta.custom_claims?.global_name || meta.name || '',
+            full_name: meta.full_name || meta.name || '',
+            name: meta.name || '',
+            email: parsed.user.email || '',
+            provider_id: meta.provider_id || '',
+            id: parsed.user.id || '',
+            created_at: parsed.user.created_at || ''
+          });
+          return;
+        }
+      }
+    } catch(e) {}
+
+    // Fallback: tentar o AuthService
+    const user = AuthService.getUser();
+    if (user) { render(user); return; }
+
+    container.innerHTML = `<div class="ta-empty"><p style="color:#5f838a;">Faça login para ver seu perfil.</p></div>`;
   }
 
   function _logout() {
