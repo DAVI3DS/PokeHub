@@ -5,8 +5,8 @@
   <br>
 
   <p>
-    <a href="https://yuykkk.github.io/Pokedex/">
-      <img src="https://img.shields.io/badge/ABRIR%20SITE%20ONLINE-ffcb05?style=for-the-badge&logo=githubpages&logoColor=2a3f9d" alt="Abrir site online" />
+    <a href="https://github.com/DAVI3DS/PokeHub">
+      <img src="https://img.shields.io/badge/REPOSIT%C3%93RIO-ffcb05?style=for-the-badge&logo=github&logoColor=2a3f9d" alt="Repositório no GitHub" />
     </a>
   </p>
 
@@ -18,10 +18,10 @@
     <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/133.png" width="72" alt="Eevee" />
   </p>
 
-  <h1>Pokédex</h1>
+  <h1>⚡ PokeHub</h1>
 
   <p>
-    Sua Pokédex completa com busca inteligente, cartas TCG e <strong>Team Builder</strong> automático.
+    Seu hub completo do universo Pokémon — Pokédex inteligente, cartas TCG e <strong>Team Builder</strong> automático.
   </p>
 
 </div>
@@ -31,9 +31,9 @@
 <h2 align="center">📖 Sobre o Projeto</h2>
 
 <p align="center">
-  Uma Pokédex web completa com visual inspirado no universo Pokémon. 
+  O <strong>PokeHub</strong> é uma plataforma Pokémon completa com visual inspirado no universo dos monstrinhos. 
   Pesquise por qualquer Pokémon, explore informações detalhadas, cadeias de evolução, 
-  versões shiny, cartas TCG, pacotes de cartas — e agora, <strong>monte times inteligentes</strong> 
+  versões shiny, cartas TCG, pacotes de cartas — e monte times inteligentes 
   com um algoritmo que entende de sinergia, cobertura e estratégia.
 </p>
 
@@ -132,7 +132,7 @@
 <h2 align="center">📸 Preview</h2>
 
 <p align="center">
-  <img src="./recursos/preview/preview-home.png" width="320" alt="Preview da tela inicial da Pokédex" />
+  <img src="./recursos/preview/preview-home.png" width="320" alt="Preview da tela inicial" />
   <img src="./recursos/preview/preview-pokemon.png" width="320" alt="Preview das informações de um Pokémon" />
 </p>
 
@@ -160,7 +160,7 @@
   </tr>
   <tr>
     <td><code>index.html</code></td>
-    <td>Estrutura principal da Pokédex + scripts legados</td>
+    <td>Estrutura principal + scripts legados</td>
   </tr>
   <tr>
     <td><code>styles.css</code></td>
@@ -181,14 +181,14 @@
 <h2 align="center">🚀 Como Rodar</h2>
 
 <p align="center">
-  <a href="https://yuykkk.github.io/Pokedex/">
-    <img src="https://img.shields.io/badge/ABRIR%20SITE%20ONLINE-2a3f9d?style=for-the-badge&logo=githubpages&logoColor=ffcb05" alt="Abrir site online" />
+  <a href="https://github.com/DAVI3DS/PokeHub">
+    <img src="https://img.shields.io/badge/REPOSIT%C3%93RIO-2a3f9d?style=for-the-badge&logo=github&logoColor=ffcb05" alt="Repositório no GitHub" />
   </a>
 </p>
 
 ```bash
-git clone https://github.com/Yuykkk/Pokedex.git
-cd Pokedex
+git clone https://github.com/DAVI3DS/PokeHub.git
+cd PokeHub
 ```
 
 Depois é só abrir o arquivo `index.html` no navegador.
@@ -241,7 +241,7 @@ http://localhost:8000
 <h2 align="center">📁 Estrutura</h2>
 
 ```text
-Pokedex/
+PokeHub/
 ├── index.html
 ├── styles.css
 ├── team-builder.css
