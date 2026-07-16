@@ -17,7 +17,12 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
   const time = [null, null, null, null, null, null];
 
   function adicionar(idx, pokemon) { time[idx] = pokemon; atualizarPrevia(); }
-  function remover(idx) { time[idx] = null; atualizarPrevia(); }
+  function remover(idx) {
+    if (idx < 0 || idx >= 6) return;
+    time[idx] = null;
+    renderizarSlots();
+    atualizarPrevia();
+  }
 
   function obterTimeValido() { return time.filter(Boolean); }
 
