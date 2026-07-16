@@ -123,5 +123,6 @@ const AuthService = window.AuthService || (function() {
   if (document.readyState !== 'loading') init();
   else document.addEventListener('DOMContentLoaded', init);
 
-  return { init, login, logout, getUser, onAuthChange };
+  window.AuthService = { init, login, logout, getUser, onAuthChange };
+  return window.AuthService;
 })();
