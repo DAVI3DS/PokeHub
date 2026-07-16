@@ -1,0 +1,429 @@
+/* ===== TEAM BUILDER — Pokédex Team Builder ===== */
+/* Segue o design system do site (glassmorphism, cores, tipografia) */
+
+/* ─── Container principal ─── */
+
+#teamBuilderContainer {
+  width: min(780px, calc(100vw - 40px));
+  margin: 28px auto 0;
+  padding: 28px 24px;
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+  text-align: left;
+}
+
+#teamBuilderContainer:empty {
+  display: none;
+}
+
+#teamBuilderContainer h2 {
+  margin: 0 0 18px;
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+  color: #1d1d1f;
+  text-align: center;
+}
+
+/* ─── Painel de Configuração ─── */
+
+.tb-config {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tb-config-full {
+  grid-column: 1 / -1;
+}
+
+.tb-config label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: #5f838a;
+  text-align: left;
+}
+
+.tb-config select,
+.tb-config input[type="number"] {
+  padding: 10px 14px;
+  border: 2px solid rgba(26, 26, 46, 0.15);
+  border-radius: 16px;
+  font: inherit;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease;
+  min-height: 44px;
+}
+
+.tb-config select:focus,
+.tb-config input[type="number"]:focus {
+  border-color: #ff8800;
+}
+
+.tb-config select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.tb-checkboxes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.tb-checkboxes label {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: #1d1d1f;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tb-checkboxes input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #ffcb05;
+  cursor: pointer;
+}
+
+.tb-radio-group {
+  display: flex;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.tb-radio-group label {
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+  color: #1d1d1f;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tb-radio-group input[type="radio"] {
+  accent-color: #ffcb05;
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+/* ─── Botão Gerar Time ─── */
+
+.tb-build-btn {
+  grid-column: 1 / -1;
+  justify-self: center;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 32px;
+  font: inherit;
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: #1a1a2e;
+  background: linear-gradient(180deg, #ffdb5c, #ffcb05);
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  will-change: transform;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tb-build-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+}
+
+.tb-build-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.tb-build-btn:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+}
+
+/* ─── Estados ─── */
+
+.tb-idle,
+.tb-empty,
+.tb-error,
+.tb-loading {
+  text-align: center;
+  padding: 40px 20px;
+  color: #5f6f84;
+}
+
+.tb-idle p,
+.tb-empty p,
+.tb-error p {
+  margin: 8px 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.tb-idle-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.tb-error {
+  color: #d62828;
+}
+
+.tb-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.tb-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 203, 5, 0.3);
+  border-top-color: #ffcb05;
+  border-radius: 50%;
+  animation: tb-spin 0.8s linear infinite;
+}
+
+@keyframes tb-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Grid do Time ─── */
+
+.tb-team-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 20px;
+}
+
+/* ─── Team Analysis Bar ─── */
+
+.tb-analysis {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 20px;
+  padding: 14px 18px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(10px) saturate(1.4);
+  -webkit-backdrop-filter: blur(10px) saturate(1.4);
+  border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+.tb-analysis-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1d1d1f;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.tb-analysis-item span:first-child {
+  color: #5f838a;
+  font-weight: 600;
+}
+
+/* ─── Card de Pokémon ─── */
+
+.tb-card {
+  --rot-x: 0deg;
+  --rot-y: 0deg;
+  padding: 16px;
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(14px) saturate(1.6);
+  -webkit-backdrop-filter: blur(14px) saturate(1.6);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  transform: perspective(900px) rotateX(var(--rot-x)) rotateY(var(--rot-y));
+  transform-style: preserve-3d;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  will-change: transform;
+  animation: tb-card-enter 0.35s ease both;
+}
+
+@keyframes tb-card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.tb-card:hover {
+  transform: perspective(900px) rotateX(var(--rot-x)) rotateY(var(--rot-y)) translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.tb-card:nth-child(2) { animation-delay: 0.05s; }
+.tb-card:nth-child(3) { animation-delay: 0.10s; }
+.tb-card:nth-child(4) { animation-delay: 0.15s; }
+.tb-card:nth-child(5) { animation-delay: 0.20s; }
+.tb-card:nth-child(6) { animation-delay: 0.25s; }
+
+.tb-card-sprite {
+  width: 96px;
+  height: 96px;
+  image-rendering: auto;
+  filter: drop-shadow(0 6px 12px rgba(26, 26, 46, 0.12));
+}
+
+.tb-card-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: #1d1d1f;
+  text-transform: capitalize;
+}
+
+.tb-card-types {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.tb-type-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.tb-type-badge.normal { background: #A8A77A; }
+.tb-type-badge.fire { background: #EE8130; }
+.tb-type-badge.water { background: #6390F0; }
+.tb-type-badge.electric { background: #F7D02C; color: #1a1a2e; text-shadow: none; }
+.tb-type-badge.grass { background: #7AC74C; }
+.tb-type-badge.ice { background: #96D9D6; color: #1a1a2e; text-shadow: none; }
+.tb-type-badge.fighting { background: #C22E28; }
+.tb-type-badge.poison { background: #A33EA1; }
+.tb-type-badge.ground { background: #E2BF65; color: #1a1a2e; text-shadow: none; }
+.tb-type-badge.flying { background: #A98FF3; }
+.tb-type-badge.psychic { background: #F95587; }
+.tb-type-badge.bug { background: #A6B91A; }
+.tb-type-badge.rock { background: #B6A136; }
+.tb-type-badge.ghost { background: #735797; }
+.tb-type-badge.dragon { background: #6F35FC; }
+.tb-type-badge.dark { background: #705746; }
+.tb-type-badge.steel { background: #B7B7CE; color: #1a1a2e; text-shadow: none; }
+.tb-type-badge.fairy { background: #D685AD; }
+
+.tb-card-role {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  background: linear-gradient(180deg, #fff0a6, #ffd84d);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+}
+
+.tb-card-stats {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #5f838a;
+}
+
+.tb-card-stat {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.tb-card-stat strong {
+  color: #1d1d1f;
+}
+
+.tb-card-reason {
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: rgba(255, 213, 92, 0.15);
+  border: 1px solid rgba(255, 213, 92, 0.3);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #3a3a4a;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.tb-card-reason::before {
+  content: "💡 ";
+  font-size: 0.9rem;
+}
+
+/* ─── Responsivo ─── */
+
+@media (max-width: 640px) {
+  #teamBuilderContainer {
+    width: calc(100vw - 32px);
+    padding: 24px 18px;
+    border-radius: 22px;
+  }
+
+  .tb-config {
+    grid-template-columns: 1fr;
+  }
+
+  .tb-team-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tb-analysis {
+    flex-direction: column;
+  }
+
+  .tb-checkboxes {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tb-card {
+    padding: 14px;
+  }
+}

@@ -1,0 +1,16 @@
+# Arquivos locais do editor
+.vscode/
+.idea/
+
+# Arquivos temporarios
+__temp_*.js
+*.tmp
+*.log
+
+# Cache e arquivos baixados do navegador
+referencias/
+arquivo/
+
+# Sistema operacional
+Thumbs.db
+.DS_Store
