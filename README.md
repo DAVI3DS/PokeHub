@@ -128,6 +128,17 @@
       <br>
       <strong>🎛️ Filtros:</strong> Quantidade • Geração • Lendários • Mega • Paradox • Ultra Beasts
     </td>
+    <td width="50%" align="center" colspan="2">
+      <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/700.png" width="48" alt="Sylveon" />
+      <br>
+      <strong>🔍 Team Analyzer</strong>
+      <br>
+      Monte sua equipe manualmente e receba análise completa<br>
+      com nota, pontos fortes, fracos e sugestões de melhoria.<br>
+      <br>
+      <strong>📊 Cobertura ofensiva • Fraquezas • Sinergia</strong><br>
+      <strong>✨ Melhorar Equipe</strong> com recomendações automáticas
+    </td>
   </tr>
 </table>
 
@@ -147,6 +158,10 @@
 
 <p align="center">
   <img src="./recursos/preview/preview-team-builder.png" width="640" alt="Preview do Team Builder Inteligente" />
+</p>
+
+<p align="center">
+  <img src="./recursos/preview/preview-team-analyzer.png" width="640" alt="Preview do Team Analyzer" />
 </p>
 
 ---
@@ -171,12 +186,20 @@
     <td>Design system — glassmorphism, cores, animações, responsivo</td>
   </tr>
   <tr>
-    <td><code>team-builder.js</code></td>
+    <td><code>auth-*.js</code></td>
+    <td>Sistema de contas com Discord OAuth via Supabase</td>
+  </tr>
+  <tr>
+    <td><code>team-builder.*</code></td>
     <td>Algoritmo inteligente de montagem de times + UI</td>
   </tr>
   <tr>
-    <td><code>team-builder.css</code></td>
-    <td>Estilos exclusivos do Team Builder</td>
+    <td><code>team-analyzer.*</code></td>
+    <td>Análise completa de equipes com nota e sugestões</td>
+  </tr>
+  <tr>
+    <td><code>teams.*</code></td>
+    <td>Minhas Equipes — CRUD com persistência local</td>
   </tr>
 </table>
 
@@ -246,12 +269,13 @@ http://localhost:8000
 PokeHub/
 ├── index.html
 ├── styles.css
-├── team-builder.css
-├── team-builder.js
+├── auth-config.js  auth-service.js  auth-ui.js  auth.css
+├── teams-data.js  teams-ui.js  teams.css
+├── team-builder.js  team-builder.css
+├── team-analyzer.js  team-analyzer.css
 ├── tcg_set_base1.json
 ├── LICENSE
-├── .github/
-│   └── workflows/
+├── .github/workflows/
 └── recursos/
     ├── images/
     │   ├── Pokedex-Logo.png
