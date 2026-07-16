@@ -9,6 +9,7 @@
   <link rel="apple-touch-icon" href="recursos/images/pokedex.png">
   <link rel="stylesheet" href="styles.css">
   <link rel="stylesheet" href="team-builder.css">
+  <link rel="stylesheet" href="team-analyzer.css">
 </head>
 <body>
 
@@ -27,6 +28,7 @@
     <button type="button" class="aba-modo-principal ativa" data-modo="pokemon" role="tab" aria-selected="true" onclick="alternarModo('pokemon')">Pokédex</button>
     <button type="button" class="aba-modo-principal" data-modo="pacotes" role="tab" aria-selected="false" onclick="alternarModo('pacotes')">Pacotes TCG</button>
     <button type="button" class="aba-modo-principal" data-modo="teambuilder" role="tab" aria-selected="false" onclick="alternarModo('teambuilder')">Team Builder</button>
+    <button type="button" class="aba-modo-principal" data-modo="teamanalyzer" role="tab" aria-selected="false" onclick="alternarModo('teamanalyzer')">Team Analyzer</button>
   </div>
 
   <!-- SUA LOGO CENTRAL (troque o nome do arquivo aqui) -->
@@ -43,6 +45,7 @@
 
   <div id="resultado"></div>
   <div id="teamBuilderContainer" hidden></div>
+  <div id="teamAnalyzerContainer" hidden></div>
   <div id="modalCarta" class="modal-carta" aria-hidden="true">
     <div class="modal-carta-overlay" onclick="fecharModalCarta()"></div>
     <div class="modal-carta-conteudo" role="dialog" aria-modal="true" aria-labelledby="tituloCartaTcg">
@@ -2178,6 +2181,20 @@
         if (window.TeamBuilder) {
           TeamBuilder.mostrar();
         }
+      } else if (modo === "teamanalyzer") {
+        campoBuscaPokemon.hidden = true;
+        campoBuscaPacote.hidden = true;
+        document.getElementById("sugestoes").hidden = true;
+        document.getElementById("sugestoesPacotes").hidden = true;
+        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
+        campoBuscaPokemon.value = "";
+        campoBuscaPacote.value = "";
+        document.getElementById("sugestoes").innerHTML = "";
+        document.getElementById("sugestoesPacotes").innerHTML = "";
+        resultado.innerHTML = "";
+        if (window.TeamAnalyzer) {
+          TeamAnalyzer.mostrar();
+        }
       }
     }
 
@@ -2527,5 +2544,6 @@
   </script>
 
   <script src="team-builder.js"></script>
+  <script src="team-analyzer.js"></script>
 </body>
 </html>

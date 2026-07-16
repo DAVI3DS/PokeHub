@@ -794,6 +794,14 @@ const TeamBuilder = window.TeamBuilder || (function() {
     if (!c.hasChildNodes() || c.innerHTML.trim() === "") init();
   }
 
-  window.TeamBuilder = { init, mostrar, carregarBase, gerarTime };
+  window.TeamBuilder = {
+    init, mostrar, carregarBase, gerarTime,
+    DB,
+    TYPE_CHART_OFF, TYPE_CHART_RES, TYPE_CHART_WEAK, ALL_TYPES,
+    classificarRole,
+    fraquezasTime, resistenciasTime,
+    coberturaCombinada, calcularCobertura,
+    capitalizar, escapar
+  };
   return window.TeamBuilder;
 })();
