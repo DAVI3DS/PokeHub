@@ -4,11 +4,12 @@
 const AuthService = window.AuthService || (function() {
   'use strict';
 
-  const { supabaseUrl, supabaseAnonKey, siteUrl } = window.AUTH_CONFIG || {};
+  const { supabaseUrl, supabaseAnonKey } = window.AUTH_CONFIG || {};
   let supabase = null;
   let currentUser = null;
   let callbacks = [];
   let initialized = false;
+  let processandoCallback = false;
 
   /* ─── Carregar Supabase SDK ─── */
 
@@ -25,6 +26,7 @@ const AuthService = window.AuthService || (function() {
 
   async function init() {
     if (initialized) return;
+    if (processandoCallback) return;
     try {
       const sdk = await carregarSDK();
       supabase = sdk.createClient(supabaseUrl, supabaseAnonKey, {
@@ -32,30 +34,33 @@ const AuthService = window.AuthService || (function() {
           autoRefreshToken: true,
           persistSession: true,
           detectSessionInUrl: true,
-          storageKey: 'pokehub-auth'
+          storageKey: 'pokehub-auth',
+          flowType: 'implicit'
         }
       });
 
-      // Verificar sessão existente
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        currentUser = {
-          id: session.user.id,
-          ...session.user.user_metadata,
-          email: session.user.email,
-          created_at: session.user.created_at
-        };
+      // Verificar se tem token na URL (callback do OAuth)
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        processandoCallback = true;
+        // O Supabase detecta automaticamente e processa o hash
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (session) {
+          currentUser = processarUser(session);
+          // Limpar hash da URL sem recarregar
+          history.replaceState(null, '', window.location.pathname);
+        }
+      } else {
+        // Verificar sessão existente no localStorage
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          currentUser = processarUser(session);
+        }
       }
 
       // Escutar mudanças de auth
       supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          currentUser = {
-            id: session.user.id,
-            ...session.user.user_metadata,
-            email: session.user.email,
-            created_at: session.user.created_at
-          };
+          currentUser = processarUser(session);
         } else if (event === 'SIGNED_OUT') {
           currentUser = null;
         }
@@ -68,6 +73,20 @@ const AuthService = window.AuthService || (function() {
     }
   }
 
+  function processarUser(session) {
+    const meta = session.user.user_metadata || {};
+    return {
+      id: session.user.id,
+      name: meta.name || meta.full_name || 'Usuário',
+      full_name: meta.full_name || meta.name || 'Usuário',
+      email: session.user.email || '',
+      avatar_url: meta.avatar_url || meta.picture || '',
+      global_name: meta.custom_claims?.global_name || meta.name || 'Usuário',
+      created_at: session.user.created_at,
+      provider_id: meta.provider_id || ''
+    };
+  }
+
   /* ─── API ─── */
 
   async function login() {
@@ -76,7 +95,7 @@ const AuthService = window.AuthService || (function() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'discord',
         options: {
-          redirectTo: siteUrl + 'auth-callback.html',
+          redirectTo: window.location.origin + '/PokeHub/',
           scopes: 'identify email'
         }
       });

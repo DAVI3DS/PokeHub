@@ -46,7 +46,7 @@ const AuthUI = window.AuthUI || (function() {
     if (!area) return;
 
     const avatar = user.avatar_url || user.picture || `https://cdn.discordapp.com/embed/avatars/0.png`;
-    const nome = user.full_name || user.name || user.custom_claims?.global_name || user.email || 'Usuário';
+    const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
 
     area.innerHTML = `
       <div class="auth-user" id="authUserBtn">
@@ -110,7 +110,7 @@ const AuthUI = window.AuthUI || (function() {
     document.getElementById('resultado').innerHTML = '';
 
     const avatar = user.avatar_url || user.picture || `https://cdn.discordapp.com/embed/avatars/0.png`;
-    const nome = user.full_name || user.name || user.custom_claims?.global_name || user.email || 'Usuário';
+    const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
     const tag = user.email ? user.email : '';
     const dataCriacao = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '—';
 
