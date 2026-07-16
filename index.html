@@ -48,6 +48,8 @@
   <div id="resultado"></div>
   <div id="teamBuilderContainer" hidden></div>
   <div id="teamAnalyzerContainer" hidden></div>
+  <div id="profileContainer" hidden></div>
+  <div id="teamsContainer" hidden></div>
   <div id="modalCarta" class="modal-carta" aria-hidden="true">
     <div class="modal-carta-overlay" onclick="fecharModalCarta()"></div>
     <div class="modal-carta-conteudo" role="dialog" aria-modal="true" aria-labelledby="tituloCartaTcg">
@@ -2130,106 +2132,55 @@
 
       const campoBuscaPokemon = document.getElementById("busca");
       const campoBuscaPacote = document.getElementById("buscaPacote");
+      const sugestoes = document.getElementById("sugestoes");
+      const sugestoesPacotes = document.getElementById("sugestoesPacotes");
       const resultado = document.getElementById("resultado");
 
+      // Esconder TODOS os containers
+      resultado.hidden = true;
       document.getElementById("teamBuilderContainer").hidden = true;
       document.getElementById("teamAnalyzerContainer").hidden = true;
-      const profileEl = document.getElementById("profileContainer");
-      if (profileEl) profileEl.hidden = true;
-      const teamsEl = document.getElementById("teamsPage");
-      if (teamsEl) teamsEl.hidden = true;
+      const pc = document.getElementById("profileContainer");
+      if (pc) pc.hidden = true;
+      const tc = document.getElementById("teamsContainer");
+      if (tc) tc.hidden = true;
 
+      // Esconder inputs
+      campoBuscaPokemon.hidden = true;
+      campoBuscaPacote.hidden = true;
+      if (sugestoes) sugestoes.hidden = true;
+      if (sugestoesPacotes) sugestoesPacotes.hidden = true;
+      if (campoBuscaPokemon) campoBuscaPokemon.value = "";
+      if (campoBuscaPacote) campoBuscaPacote.value = "";
+      if (sugestoes) sugestoes.innerHTML = "";
+      if (sugestoesPacotes) sugestoesPacotes.innerHTML = "";
+
+      estadoPacoteTcgAtual = null;
+      filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
+
+      // Mostrar página ativa
       if (modo === "pokemon") {
+        resultado.hidden = false;
         campoBuscaPokemon.hidden = false;
-        campoBuscaPacote.hidden = true;
-        document.getElementById("sugestoes").hidden = false;
-        document.getElementById("sugestoesPacotes").hidden = true;
-        estadoPacoteTcgAtual = null;
-        filtrosPacoteTcgAtivos = {
-          tipo: "",
-          raridade: "",
-          subtipo: "",
-          especial: ""
-        };
-        campoBuscaPacote.value = "";
-        document.getElementById("sugestoesPacotes").innerHTML = "";
+        if (sugestoes) sugestoes.hidden = false;
         resultado.innerHTML = "";
       } else if (modo === "pacotes") {
-        campoBuscaPokemon.hidden = true;
+        resultado.hidden = false;
         campoBuscaPacote.hidden = false;
-        document.getElementById("sugestoes").hidden = true;
-        document.getElementById("sugestoesPacotes").hidden = false;
-        filtrosPacoteTcgAtivos = {
-          tipo: "",
-          raridade: "",
-          subtipo: "",
-          especial: ""
-        };
-        campoBuscaPokemon.value = "";
-        document.getElementById("sugestoes").innerHTML = "";
-        resultado.innerHTML = `
-          <div class="painel-pacotes-tcg">
-            <p style="text-align: center; margin-top: 32px; color: #5f6f84;">
-              Digite o nome de um pacote TCG para começar a busca.
-            </p>
-          </div>
-        `;
+        if (sugestoesPacotes) sugestoesPacotes.hidden = false;
+        resultado.innerHTML = `<div class="painel-pacotes-tcg"><p style="text-align:center;margin-top:32px;color:#5f6f84;">Digite o nome de um pacote TCG para começar a busca.</p></div>`;
       } else if (modo === "teambuilder") {
-        campoBuscaPokemon.hidden = true;
-        campoBuscaPacote.hidden = true;
-        document.getElementById("sugestoes").hidden = true;
-        document.getElementById("sugestoesPacotes").hidden = true;
-        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
-        campoBuscaPokemon.value = "";
-        campoBuscaPacote.value = "";
-        document.getElementById("sugestoes").innerHTML = "";
-        document.getElementById("sugestoesPacotes").innerHTML = "";
-        resultado.innerHTML = "";
-        if (window.TeamBuilder) {
-          TeamBuilder.mostrar();
-        }
+        document.getElementById("teamBuilderContainer").hidden = false;
+        if (window.TeamBuilder) TeamBuilder.mostrar();
       } else if (modo === "teamanalyzer") {
-        campoBuscaPokemon.hidden = true;
-        campoBuscaPacote.hidden = true;
-        document.getElementById("sugestoes").hidden = true;
-        document.getElementById("sugestoesPacotes").hidden = true;
-        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
-        campoBuscaPokemon.value = "";
-        campoBuscaPacote.value = "";
-        document.getElementById("sugestoes").innerHTML = "";
-        document.getElementById("sugestoesPacotes").innerHTML = "";
-        resultado.innerHTML = "";
-        if (window.TeamAnalyzer) {
-          TeamAnalyzer.mostrar();
-        }
+        document.getElementById("teamAnalyzerContainer").hidden = false;
+        if (window.TeamAnalyzer) TeamAnalyzer.mostrar();
       } else if (modo === "profile") {
-        campoBuscaPokemon.hidden = true;
-        campoBuscaPacote.hidden = true;
-        document.getElementById("sugestoes").hidden = true;
-        document.getElementById("sugestoesPacotes").hidden = true;
-        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
-        campoBuscaPokemon.value = "";
-        campoBuscaPacote.value = "";
-        document.getElementById("sugestoes").innerHTML = "";
-        document.getElementById("sugestoesPacotes").innerHTML = "";
-        resultado.innerHTML = "";
-        if (window.AuthUI) {
-          AuthUI._renderizarPerfil();
-        }
+        const pp = document.getElementById("profileContainer");
+        if (pp) { pp.hidden = false; if (window.AuthUI) AuthUI._renderizarPerfil(); }
       } else if (modo === "teams") {
-        campoBuscaPokemon.hidden = true;
-        campoBuscaPacote.hidden = true;
-        document.getElementById("sugestoes").hidden = true;
-        document.getElementById("sugestoesPacotes").hidden = true;
-        filtrosPacoteTcgAtivos = { tipo: "", raridade: "", subtipo: "", especial: "" };
-        campoBuscaPokemon.value = "";
-        campoBuscaPacote.value = "";
-        document.getElementById("sugestoes").innerHTML = "";
-        document.getElementById("sugestoesPacotes").innerHTML = "";
-        resultado.innerHTML = "";
-        if (window.TeamsUI) {
-          TeamsUI.mostrar();
-        }
+        const tt = document.getElementById("teamsContainer");
+        if (tt) { tt.hidden = false; if (window.TeamsUI) TeamsUI.mostrar(); }
       }
     }
 

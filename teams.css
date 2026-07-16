@@ -2,7 +2,7 @@
 
 /* ─── Container principal ─── */
 
-#teamsPage {
+#teamsContainer {
   width: min(780px, calc(100vw - 40px));
   margin: 28px auto 0;
   padding: 28px 24px;
@@ -18,7 +18,7 @@
   text-align: left;
 }
 
-#teamsPage:empty { display: none; }
+#teamsContainer:empty { display: none; }
 
 /* ─── Header ─── */
 

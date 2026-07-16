@@ -124,23 +124,17 @@ const AuthUI = window.AuthUI || (function() {
     const user = AuthService.getUser();
     if (!user) { alternarModo('pokemon'); return; }
 
-    const resultado = document.getElementById('resultado');
-    if (!resultado) return;
+    const container = document.getElementById('profileContainer');
+    if (!container) return;
 
-    // Esconder containers privados e mostrar no resultado
-    document.getElementById('teamBuilderContainer').hidden = true;
-    document.getElementById('teamAnalyzerContainer').hidden = true;
-    const teamsPage = document.getElementById('teamsPage');
-    if (teamsPage) teamsPage.hidden = true;
-    const profileContainer = document.getElementById('profileContainer');
-    if (profileContainer) profileContainer.hidden = true;
+    container.innerHTML = ''; // limpa
 
     const avatar = user.avatar_url || user.picture || 'https://cdn.discordapp.com/embed/avatars/0.png';
     const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
     const tag = user.email ? user.email : '';
     const dataCriacao = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '—';
 
-    resultado.innerHTML = `
+    container.innerHTML = `
       <div style="text-align:center;">
         <img src="${avatar}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);" referrerpolicy="no-referrer">
         <h2 style="margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.6rem);color:#1d1d1f;">${nome}</h2>

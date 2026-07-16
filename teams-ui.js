@@ -20,12 +20,10 @@ const TeamsUI = window.TeamsUI || (function() {
   /* ─── Renderizar Lista ─── */
 
   function renderizarPagina(msg) {
-    const resultado = document.getElementById('resultado');
-    if (!resultado) return;
+    const container = document.getElementById('teamsContainer');
+    if (!container) return;
 
-    // Esconder containers privados
-    const teamsPage = document.getElementById('teamsPage');
-    if (teamsPage) teamsPage.hidden = true;
+    container.innerHTML = '';
 
     const equipes = TeamsData.listar();
 
@@ -56,7 +54,7 @@ const TeamsUI = window.TeamsUI || (function() {
       html += `<div class="tm-grid" id="tmGrid">${equipes.map(e => renderizarCard(e)).join('')}</div>`;
     }
 
-    resultado.innerHTML = html;
+    container.innerHTML = html;
   }
 
   function renderizarCard(equipe) {
@@ -84,8 +82,8 @@ const TeamsUI = window.TeamsUI || (function() {
   /* ─── Editor ─── */
 
   function renderizarEditor() {
-    const resultado = document.getElementById('resultado');
-    if (!resultado) return;
+    const container = document.getElementById('teamsContainer');
+    if (!container) return;
 
     const titulo = modoEditor === 'criar' ? '➕ Nova Equipe' : '✏️ Editar Equipe';
     const eq = modoEditor === 'editar' ? TeamsData.obter(editandoId) : null;
@@ -102,7 +100,7 @@ const TeamsUI = window.TeamsUI || (function() {
       </div>`;
     }).join('');
 
-    resultado.innerHTML = `<div class="tm-editor">
+    container.innerHTML = `<div class="tm-editor">
       <h3>${titulo}</h3>
       <div class="tm-field">
         <label>Nome da equipe</label>
@@ -129,8 +127,8 @@ const TeamsUI = window.TeamsUI || (function() {
   }
 
   function renderizarSeletorPokemon() {
-    const container = document.getElementById('resultado');
-    if (!container) return;
+    const pagina = document.getElementById('teamsContainer');
+    if (!pagina) return;
 
     const filtros = lerFiltrosSeletor();
     const lista = listarPokemons(filtros).slice(0, 60);
@@ -144,7 +142,7 @@ const TeamsUI = window.TeamsUI || (function() {
       { value: "spD", label: "Def. Esp." }, { value: "spe", label: "Velocidade" }
     ];
 
-    container.innerHTML = `<div style="margin-bottom:14px;">
+    pagina.innerHTML = `<div style="margin-bottom:14px;">
         <button type="button" class="tm-btn tm-btn-secondary" onclick="TeamsUI._voltarEditor()">← Voltar</button>
       </div>
       <div class="ta-search-filters">
