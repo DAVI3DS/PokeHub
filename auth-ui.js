@@ -21,42 +21,11 @@ const AuthUI = window.AuthUI || (function() {
         adicionarAbasPrivadas();
       } else if (event === 'SIGNED_OUT') {
         renderizarLogout();
-        removerAbasPrivadas();
       }
     });
 
     const user = AuthService.getUser();
-    if (user) { renderizarUsuario(user); adicionarAbasPrivadas(); }
-  }
-
-  function adicionarAbasPrivadas() {
-    const barra = document.querySelector('.abas-modo-principal');
-    if (!barra) return;
-    if (document.querySelector('[data-modo="profile"]')) return; // já existe
-
-    const perfil = document.createElement('button');
-    perfil.type = 'button';
-    perfil.className = 'aba-modo-principal';
-    perfil.dataset.modo = 'profile';
-    perfil.role = 'tab';
-    perfil.textContent = '👤 Perfil';
-    perfil.onclick = () => alternarModo('profile');
-
-    const equipes = document.createElement('button');
-    equipes.type = 'button';
-    equipes.className = 'aba-modo-principal';
-    equipes.dataset.modo = 'teams';
-    equipes.role = 'tab';
-    equipes.textContent = '📋 Equipes';
-    equipes.onclick = () => alternarModo('teams');
-
-    barra.appendChild(perfil);
-    barra.appendChild(equipes);
-  }
-
-  function removerAbasPrivadas() {
-    document.querySelector('[data-modo="profile"]')?.remove();
-    document.querySelector('[data-modo="teams"]')?.remove();
+    if (user) { renderizarUsuario(user); }
   }
 
   function renderizarUsuario(user) {

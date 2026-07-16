@@ -2124,8 +2124,9 @@
       document.getElementById("sugestoesPacotes").innerHTML = "";
       fecharHistorico();
 
+      const ehPrivado = (modo === "profile" || modo === "teams");
       document.querySelectorAll(".aba-modo-principal").forEach(botao => {
-        const ativa = botao.dataset.modo === modo;
+        const ativa = !ehPrivado && botao.dataset.modo === modo;
         botao.classList.toggle("ativa", ativa);
         botao.setAttribute("aria-selected", ativa ? "true" : "false");
       });
