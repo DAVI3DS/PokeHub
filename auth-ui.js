@@ -92,58 +92,34 @@ const AuthUI = window.AuthUI || (function() {
     const container = document.getElementById('profileContainer');
     if (!container) return;
 
-    container.innerHTML = `<div class="ta-loading"><div class="ta-spinner"></div><p>Carregando perfil...</p></div>`;
-
-    const render = (user) => {
-      const avatar = user.avatar_url || user.picture || 'https://cdn.discordapp.com/embed/avatars/0.png';
-      const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
-      const tag = user.email ? user.email : '';
-      const dataCriacao = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '—';
-
-      container.innerHTML = `
-        <div style="text-align:center;">
-          <img src="${avatar}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);" referrerpolicy="no-referrer">
-          <h2 style="margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.6rem);color:#1d1d1f;">${nome}</h2>
-          <p style="margin:0 0 20px;font-size:0.9rem;color:#5f838a;font-weight:700;">${tag}</p>
-          <div style="text-align:left;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.75);margin-bottom:16px;">
-            <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>ID:</strong> ${user.provider_id || user.id}</p>
-            <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>Conta criada em:</strong> ${dataCriacao}</p>
-          </div>
-          <div style="padding:24px;border-radius:16px;background:rgba(255,255,255,0.3);border:1px dashed rgba(26,26,46,0.15);color:#5f838a;font-size:0.9rem;">
-            ⚙️ Em breve: suas equipes, estatísticas e mais!
-          </div>
-        </div>
-      `;
-    };
-
-    // Tentar pegar do localStorage do Supabase
     try {
-      const raw = localStorage.getItem('pokehub-auth');
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        const meta = parsed?.user?.user_metadata;
-        if (meta) {
-          render({
-            avatar_url: meta.avatar_url || meta.picture || '',
-            picture: meta.picture || meta.avatar_url || '',
-            global_name: meta.custom_claims?.global_name || meta.name || '',
-            full_name: meta.full_name || meta.name || '',
-            name: meta.name || '',
-            email: parsed.user.email || '',
-            provider_id: meta.provider_id || '',
-            id: parsed.user.id || '',
-            created_at: parsed.user.created_at || ''
-          });
-          return;
-        }
+      const user = AuthService.getUser();
+      if (user && user.email) {
+        const avatar = user.avatar_url || user.picture || 'https://cdn.discordapp.com/embed/avatars/0.png';
+        const nome = user.global_name || user.full_name || user.name || user.email || 'Usuário';
+        const tag = user.email || '';
+        const dataCriacao = user.created_at ? new Date(user.created_at).toLocaleDateString('pt-BR') : '—';
+
+        container.innerHTML = `
+          <div style="text-align:center;">
+            <img src="${avatar}" style="width:96px;height:96px;border-radius:50%;object-fit:cover;margin-bottom:16px;box-shadow:0 8px 24px rgba(0,0,0,0.12);" referrerpolicy="no-referrer">
+            <h2 style="margin:0 0 4px;font-size:clamp(1.3rem,3vw,1.6rem);color:#1d1d1f;">${nome}</h2>
+            <p style="margin:0 0 20px;font-size:0.9rem;color:#5f838a;font-weight:700;">${tag}</p>
+            <div style="text-align:left;padding:16px 18px;border-radius:16px;background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.75);margin-bottom:16px;">
+              <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>ID:</strong> ${user.provider_id || user.id || '—'}</p>
+              <p style="margin:6px 0;font-size:0.9rem;color:#3a3a4a;"><strong>Conta criada em:</strong> ${dataCriacao}</p>
+            </div>
+            <div style="padding:24px;border-radius:16px;background:rgba(255,255,255,0.3);border:1px dashed rgba(26,26,46,0.15);color:#5f838a;font-size:0.9rem;">
+              ⚙️ Em breve: suas equipes, estatísticas e mais!
+            </div>
+          </div>
+        `;
+        return;
       }
     } catch(e) {}
 
-    // Fallback: tentar o AuthService
-    const user = AuthService.getUser();
-    if (user) { render(user); return; }
-
-    container.innerHTML = `<div class="ta-empty"><p style="color:#5f838a;">Faça login para ver seu perfil.</p></div>`;
+    // Sem usuário logado
+    container.innerHTML = '<div style="text-align:center;padding:40px 20px;color:#5f838a;"><p>👤 Faça login para ver seu perfil.</p></div>';
   }
 
   function _logout() {
