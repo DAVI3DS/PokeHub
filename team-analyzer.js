@@ -104,26 +104,60 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
   /* ─── Seletor Inline (como o Minhas Equipes) ─── */
 
   let slotSelecionado = -1;
+  let seletorCallback = null;
+  let slotSelecionadoExterno = null;
+  let seletorCallbackBack = null;
 
   function abrirSeletor(idx) {
     slotSelecionado = idx;
     renderizarSeletor();
   }
 
+  function abrirSeletorExterno(containerEl, idx, callback, backCallback) {
+    seletorCallback = callback;
+    seletorCallbackBack = backCallback || null;
+    slotSelecionado = idx;
+    slotSelecionadoExterno = containerEl;
+
+    if (TB.DB.ready && TB.DB.pokemons.length > 0) {
+      containerEl.innerHTML = renderizarSeletorHtml();
+      document.getElementById("ta-sel-search")?.focus();
+    } else {
+      containerEl.innerHTML = '<div class="ta-loading"><div class="ta-spinner"></div><p>Carregando Pokémon...</p></div>';
+      if (!TB.DB.loading) TB.carregarBase();
+      var check = setInterval(function() {
+        if (TB.DB.ready && TB.DB.pokemons.length > 0) {
+          clearInterval(check);
+          if (slotSelecionado === idx) {
+            containerEl.innerHTML = renderizarSeletorHtml();
+            document.getElementById("ta-sel-search")?.focus();
+          }
+        }
+      }, 300);
+    }
+  }
+
+  function _fecharSeletorExterno() {
+    seletorCallback = null;
+    const back = seletorCallbackBack;
+    seletorCallbackBack = null;
+    slotSelecionado = -1;
+    const ext = slotSelecionadoExterno;
+    slotSelecionadoExterno = null;
+    if (ext) ext.innerHTML = '';
+    if (back) back();
+  }
+
   function fecharSeletor() {
     slotSelecionado = -1;
   }
 
-  function renderizarSeletor() {
-    const container = document.getElementById("teamAnalyzerContainer");
-    if (!container) return;
-
+  function renderizarSeletorHtml() {
     const TB = window.TeamBuilder;
     const filtros = lerFiltrosSeletor();
     const lista = listarPokemons(filtros).slice(0, 60);
 
     const tipos = ["","normal","fire","water","electric","grass","ice","fighting","poison","ground","flying","psychic","bug","rock","ghost","dragon","dark","steel","fairy"];
-    const geracoes = ["todas","1","2","3","4","5","6","7","8","9"];
     const roles = ["","Tank","Physical Wall","Special Wall","Mixed Sweeper","Physical Sweeper","Special Sweeper","Support","Pivot","Physical Attacker","Special Attacker","Speedster","Balanced"];
     const ordenacao = [
       { value: "id", label: "Nº Pokédex" },
@@ -135,10 +169,11 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
       { value: "spD", label: "Def. Esp." },
       { value: "spe", label: "Velocidade" }
     ];
+    const geracoes = ["todas","1","2","3","4","5","6","7","8","9"];
 
-    container.innerHTML = `
+    return `
       <div style="margin-bottom:14px;">
-        <button type="button" class="tb-build-btn" onclick="TeamAnalyzer._voltarDoSeletor()">← Voltar</button>
+        <button type="button" class="tb-build-btn" onclick="TeamAnalyzer._fecharSeletorExterno()">← Voltar</button>
       </div>
       <div class="ta-search-filters">
         <input type="text" id="ta-sel-search" placeholder="Pesquisar por nome..." oninput="TeamAnalyzer._filtrarSeletor()">
@@ -157,7 +192,12 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
       </div>
       <div id="ta-sel-grid" class="ta-selector-grid">${renderizarGridSeletor(lista)}</div>
     `;
+  }
 
+  function renderizarSeletor() {
+    const container = document.getElementById("teamAnalyzerContainer");
+    if (!container) return;
+    container.innerHTML = renderizarSeletorHtml();
     document.getElementById("ta-sel-search")?.focus();
   }
 
@@ -198,9 +238,16 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
   function _selecionarPokemon(id) {
     const pokemon = TB.DB.pokemons.find(p => p.id === id);
     if (!pokemon || slotSelecionado < 0) return;
-    adicionar(slotSelecionado, pokemon);
-    slotSelecionado = -1;
-    init();
+
+    if (seletorCallback) {
+      seletorCallback(pokemon);
+      seletorCallback = null;
+      slotSelecionado = -1;
+    } else {
+      adicionar(slotSelecionado, pokemon);
+      slotSelecionado = -1;
+      init();
+    }
   }
 
   /* ─── Cores dos tipos (para o seletor) ─── */
@@ -556,8 +603,10 @@ const TeamAnalyzer = window.TeamAnalyzer || (function() {
   window.TeamAnalyzer = {
     init, mostrar,
     _abrirSeletor: abrirSeletor,
+    abrirSeletorExterno,
     _fecharSeletor: fecharSeletor,
     _voltarDoSeletor,
+    _fecharSeletorExterno,
     _remover: remover,
     _selecionarPokemon,
     _filtrarSeletor

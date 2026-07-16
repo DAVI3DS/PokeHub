@@ -3,11 +3,9 @@
 const TeamsUI = window.TeamsUI || (function() {
   'use strict';
 
-  let modoEditor = 'criar'; // 'criar' | 'editar'
+  let modoEditor = 'criar';
   let editandoId = null;
   let timeEditor = [null, null, null, null, null, null];
-  let slotSelecionado = -1;
-  let listenerRemover = null;
 
   /* ─── Inicializar ─── */
 
@@ -20,7 +18,6 @@ const TeamsUI = window.TeamsUI || (function() {
   function renderizarPagina(msg) {
     const container = document.getElementById('teamsContainer');
     if (!container) return;
-
     container.innerHTML = '';
 
     const equipes = TeamsData.listar();
@@ -55,7 +52,7 @@ const TeamsUI = window.TeamsUI || (function() {
     container.innerHTML = html;
     setTimeout(() => {
       const btn = document.getElementById('tmBtnNova');
-      if (btn) btn.addEventListener('click', () => { try { _novaEquipe(); } catch(e) { console.error('novaEquipe error:', e); } });
+      if (btn) btn.addEventListener('click', () => { try { _novaEquipe(); } catch(e) { console.error(e); } });
     }, 0);
   }
 
@@ -119,7 +116,6 @@ const TeamsUI = window.TeamsUI || (function() {
       </div>
     </div>`;
 
-    // Conectar eventos
     document.querySelectorAll('[data-slot]').forEach(el => {
       el.addEventListener('click', function() {
         const i = parseInt(this.dataset.slot);
@@ -136,148 +132,19 @@ const TeamsUI = window.TeamsUI || (function() {
     document.getElementById('tmBtnCancelar')?.addEventListener('click', _voltar);
   }
 
-  /* ─── Seletor de Pokémon (reusa TeamAnalyzer) ─── */
+  /* ─── Seletor reusado do Team Analyzer ─── */
 
   function _abrirSeletorSlot(idx) {
-    slotSelecionado = idx;
-    const TB = window.TeamBuilder;
-    if (!TB) return;
+    const container = document.getElementById('teamsContainer');
+    if (!container) return;
+    const TA = window.TeamAnalyzer;
+    if (!TA) return;
 
-    if (TB.DB.ready && TB.DB.pokemons.length > 0) {
-      renderizarSeletorPokemon();
-      return;
-    }
-
-    // Mostra loading e inicia carregamento
-    const pagina = document.getElementById('teamsContainer');
-    if (pagina) pagina.innerHTML = '<div class="ta-loading"><div class="ta-spinner"></div><p>Carregando Pokémon...</p></div>';
-
-    if (!TB.DB.loading) TB.carregarBase();
-
-    // Tenta de novo quando a base estiver pronta
-    var check = setInterval(function() {
-      if (TB.DB.ready && TB.DB.pokemons.length > 0) {
-        clearInterval(check);
-        if (slotSelecionado === idx) renderizarSeletorPokemon();
-      }
-    }, 300);
-  }
-
-  function renderizarSeletorPokemon() {
-    const pagina = document.getElementById('teamsContainer');
-    if (!pagina) return;
-
-    const filtros = lerFiltrosSeletor();
-    const lista = listarPokemons(filtros).slice(0, 60);
-
-    const tipos = ["","normal","fire","water","electric","grass","ice","fighting","poison","ground","flying","psychic","bug","rock","ghost","dragon","dark","steel","fairy"];
-    const geracoes = ["todas","1","2","3","4","5","6","7","8","9"];
-    const ordenacao = [
-      { value: "id", label: "Nº Pokédex" }, { value: "nome", label: "Nome" },
-      { value: "hp", label: "HP" }, { value: "atk", label: "Ataque" },
-      { value: "def", label: "Defesa" }, { value: "spA", label: "Atq. Esp." },
-      { value: "spD", label: "Def. Esp." }, { value: "spe", label: "Velocidade" }
-    ];
-
-    pagina.innerHTML = `<div style="margin-bottom:14px;">
-        <button type="button" class="tm-btn tm-btn-secondary" onclick="TeamsUI._voltarEditor()">← Voltar</button>
-      </div>
-      <div class="ta-search-filters">
-        <input type="text" id="ta-sel-search" placeholder="Pesquisar por nome..." oninput="TeamsUI._atualizarSeletor()">
-        <select id="ta-sel-tipo" onchange="TeamsUI._atualizarSeletor()">
-          ${tipos.map(t => `<option value="${t}">${t ? TeamBuilder.capitalizar(t) : "Todos os tipos"}</option>`).join("")}
-        </select>
-        <select id="ta-sel-geracao" onchange="TeamsUI._atualizarSeletor()">
-          ${geracoes.map(g => `<option value="${g}">${g === "todas" ? "Todas gerações" : "Geração "+g}</option>`).join("")}
-        </select>
-        <select id="ta-sel-ordem" class="ta-filter-full" onchange="TeamsUI._atualizarSeletor()">
-          ${ordenacao.map(o => `<option value="${o.value}">Ordenar por: ${o.label}</option>`).join("")}
-        </select>
-      </div>
-      <div id="ta-sel-grid" class="ta-selector-grid">${renderizarGridSeletor(lista)}</div>
-    `;
-    document.getElementById("ta-sel-search")?.focus();
-  }
-
-  function renderizarGridSeletor(lista) {
-    if (!lista || lista.length === 0) return `<div class="ta-empty"><p>Nenhum Pokémon encontrado.</p></div>`;
-    const TB = window.TeamBuilder;
-    return lista.map(p => {
-      const role = TB.classificarRole(p.stats);
-      const spriteUrl = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p.id}.png`;
-      const typesHtml = p.types.map(t => `<span style="padding:2px 6px;border-radius:4px;font-size:0.6rem;font-weight:700;color:#fff;background:${corTipo(t)}">${t}</span>`).join("");
-      return `<div class="ta-selector-item" onclick="TeamsUI._selecionarPokemon(${p.id})">
-        <img src="${spriteUrl}" alt="${TB.escapar(p.name)}" loading="lazy">
-        <div class="ta-sel-name">${TB.capitalizar(p.name)}</div>
-        <div class="ta-sel-types">${typesHtml}</div>
-      </div>`;
-    }).join("");
-  }
-
-  function _atualizarSeletor() {
-    const div = document.getElementById("ta-sel-grid");
-    if (!div) return;
-    const lista = listarPokemons(lerFiltrosSeletor()).slice(0, 60);
-    div.innerHTML = renderizarGridSeletor(lista);
-  }
-
-  function lerFiltrosSeletor() {
-    return {
-      nome: document.getElementById("ta-sel-search")?.value || "",
-      tipo: document.getElementById("ta-sel-tipo")?.value || "",
-      geracao: document.getElementById("ta-sel-geracao")?.value || "todas",
-      ordenar: document.getElementById("ta-sel-ordem")?.value || "id"
-    };
-  }
-
-  function listarPokemons(filtros) {
-    const TB = window.TeamBuilder;
-    if (!TB || !TB.DB.pokemons) return [];
-    let pool = [...TB.DB.pokemons];
-    if (filtros.nome) {
-      const q = filtros.nome.toLowerCase();
-      pool = pool.filter(p => p.name.includes(q));
-    }
-    if (filtros.geracao && filtros.geracao !== "todas") {
-      pool = pool.filter(p => p.generation === parseInt(filtros.geracao, 10));
-    }
-    if (filtros.tipo) {
-      pool = pool.filter(p => p.types.includes(filtros.tipo));
-    }
-    const sortKey = filtros.ordenar || "id";
-    pool.sort((a, b) => {
-      if (sortKey === "nome") return a.name.localeCompare(b.name);
-      if (sortKey === "id") return a.id - b.id;
-      return (b.stats[sortKey] || 0) - (a.stats[sortKey] || 0);
-    });
-    return pool;
-  }
-
-  function corTipo(tipo) {
-    const cores = {
-      normal:"#A8A77A",fire:"#EE8130",water:"#6390F0",electric:"#F7D02C",
-      grass:"#7AC74C",ice:"#96D9D6",fighting:"#C22E28",poison:"#A33EA1",
-      ground:"#E2BF65",flying:"#A98FF3",psychic:"#F95587",bug:"#A6B91A",
-      rock:"#B6A136",ghost:"#735797",dragon:"#6F35FC",dark:"#705746",
-      steel:"#B7B7CE",fairy:"#D685AD"
-    };
-    return cores[tipo] || "#999";
-  }
-
-  function _selecionarPokemon(id) {
-    const TB = window.TeamBuilder;
-    const p = TB.DB.pokemons.find(p => p.id === id);
-    if (!p || slotSelecionado < 0) return;
-    timeEditor[slotSelecionado] = p;
-    renderizarEditor();
+    TA.abrirSeletorExterno(container, idx, function(p) { timeEditor[idx] = p; renderizarEditor(); }, renderizarEditor);
   }
 
   function _removerSlot(idx) {
     timeEditor[idx] = null;
-    renderizarEditor();
-  }
-
-  function _voltarEditor() {
     renderizarEditor();
   }
 
@@ -289,12 +156,7 @@ const TeamsUI = window.TeamsUI || (function() {
     const desc = document.getElementById('tmDesc')?.value?.trim() || '';
     const pokemon = timeEditor.filter(Boolean);
 
-    const dados = {
-      name: nome,
-      description: desc,
-      pokemon: pokemon
-    };
-
+    const dados = { name: nome, description: desc, pokemon: pokemon };
     if (modoEditor === 'editar' && editandoId) dados.id = editandoId;
 
     TeamsData.salvar(dados);
@@ -323,26 +185,18 @@ const TeamsUI = window.TeamsUI || (function() {
   }
 
   function _abrirNoBuilder(id) {
-    const eq = TeamsData.obter(id);
-    if (!eq) return;
-    alternarModo('teambuilder');
-    // Aguardar renderizar e tentar preencher — o TeamBuilder gera times, não aceita pré-preenchimento
-    renderizarPagina('💡 Abra o Team Builder e use "Aleatória Inteligente" para montar um time similar.');
+    renderizarPagina('💡 Abra o Team Builder e use "Aleatória Inteligente".');
   }
 
   function _abrirNoAnalyzer(id) {
     const eq = TeamsData.obter(id);
     if (!eq?.pokemon) return;
     const slots = TeamsData.exportarParaSlots(eq);
-
-    // Preencher o TeamAnalyzer com os Pokémon da equipe
     alternarModo('teamanalyzer');
     setTimeout(() => {
       slots.forEach((p, i) => {
         if (p && window.TeamAnalyzer) {
-          // Acessar o time internamente e preencher
-          const ta = window.TeamAnalyzer;
-          if (ta._preencherSlot) ta._preencherSlot(i, p);
+          window.TeamAnalyzer._adicionarNoSlot ? window.TeamAnalyzer._adicionarNoSlot(i, p) : null;
         }
       });
     }, 100);
@@ -369,11 +223,8 @@ const TeamsUI = window.TeamsUI || (function() {
       </div>
     </div>`;
     document.body.appendChild(overlay);
-
     document.getElementById('tmConfirmYes').onclick = () => {
-      TeamsData.remover(id);
-      overlay.remove();
-      renderizarPagina('🗑️ Equipe excluída.');
+      TeamsData.remover(id); overlay.remove(); renderizarPagina('🗑️ Equipe excluída.');
     };
     document.getElementById('tmConfirmNo').onclick = () => { overlay.remove(); };
     overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
@@ -396,15 +247,9 @@ const TeamsUI = window.TeamsUI || (function() {
     return String(texto).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
-  /* ─── API Pública ─── */
-
   window.TeamsUI = {
-    mostrar,
-    _novaEquipe, _abrirEditor, _abrirNoBuilder, _abrirNoAnalyzer,
-    _duplicar, _confirmarExcluir, _salvarEquipe,
-    _abrirSeletorSlot, _selecionarPokemon, _removerSlot,
-    _atualizarSeletor, _filtrar, _voltar, _voltarEditor
+    mostrar, _novaEquipe, _abrirEditor, _abrirNoBuilder, _abrirNoAnalyzer,
+    _duplicar, _confirmarExcluir, _salvarEquipe, _filtrar, _voltar
   };
-
   return { mostrar };
 })();
